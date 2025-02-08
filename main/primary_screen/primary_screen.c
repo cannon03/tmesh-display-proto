@@ -3,6 +3,8 @@
 
 #include "esp_log.h"
 #include "esp_spiffs.h"
+#include "jsmn/jsmn.h"
+
 
 
 static const char *TAG = "primary_screen";
@@ -84,7 +86,13 @@ static char *read_file(char *filename){
 
     buffer[length] = '\0';
     return buffer;
+}
 
+static char* get_json_tokens(char *buffer){
+    jsmn_parser p;
+    jsmntok_t t[128];
+
+    jsmn_init(&p);
 }
 
 
