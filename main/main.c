@@ -6,6 +6,9 @@
 
 void app_main(void)
 {
+
+    init_spiffs();
+    
     bsp_display_start();
 
     bsp_display_lock(0);

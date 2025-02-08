@@ -1,17 +1,23 @@
 #include <stdio.h>
+#include <string.h>
 #include "primary_screen.h"
 
+#include "bsp/esp32_s3_lcd_ev_board.h"
 #include "esp_log.h"
-#include "esp_spiffs.h"
+
 #include "jsmn/jsmn.h"
 
 
 
 static const char *TAG = "primary_screen";
+    
+    
+static bool spiffs_initialized = false;
 
 
 
-static esp_err_t init_spiffs(void){
+
+esp_err_t init_spiffs(void){
     esp_vfs_spiffs_conf_t conf = {
         .base_path = "/spiffs",
         .partition_label = NULL,
@@ -39,20 +45,85 @@ static esp_err_t init_spiffs(void){
         return ret;
     }
     ESP_LOGI(TAG, "Partition size:%d, used size:%d", total, used);
+    spiffs_initialized = true;
+
     return ESP_OK;
 
 }
 
+static void print_json_value(const char *buffer, jsmntok_t *t, int index, int indent) {
+    // Print indentation
+    for (int i = 0; i < indent; i++) {
+        ESP_LOGI(TAG,"  ");
+    }
+    
+    if (t[index].type == JSMN_PRIMITIVE || t[index].type == JSMN_STRING) {
+        ESP_LOGI(TAG,"%.*s\n", t[index].end - t[index].start, buffer + t[index].start);
+    } else if (t[index].type == JSMN_ARRAY) {
+        ESP_LOGI(TAG,"[\n");
+        int array_size = t[index].size;
+        int current = index + 1;
+        
+        for (int i = 0; i < array_size; i++) {
+            for (int j = 0; j < indent + 1; j++) ESP_LOGI(TAG,"  ");
+            print_json_value(buffer, t, current, indent + 1);
+            current += 1;
+        }
+        
+        for (int i = 0; i < indent; i++) ESP_LOGI(TAG,"  ");
+        ESP_LOGI(TAG,"]\n");
+    } else if (t[index].type == JSMN_OBJECT) {
+        ESP_LOGI(TAG,"{\n");
+        int object_size = t[index].size;
+        int current = index + 1;
+        
+        for (int i = 0; i < object_size; i++) {
+            for (int j = 0; j < indent + 1; j++) ESP_LOGI(TAG,"  ");
+            ESP_LOGI(TAG,"\"%.*s\": ", 
+                   t[current].end - t[current].start,
+                   buffer + t[current].start);
+            print_json_value(buffer, t, current + 1, indent + 1);
+            current += 2;
+        }
+        
+        for (int i = 0; i < indent; i++) ESP_LOGI(TAG,"  ");
+        ESP_LOGI(TAG,"}\n");
+    }
+}
+
+static char* get_json_tokens(char *buffer) {
+    jsmn_parser p;
+    jsmntok_t t[128]; /* We expect no more than 128 tokens */
+
+    jsmn_init(&p);
+    int r = jsmn_parse(&p, buffer, strlen(buffer), t, sizeof(t) / sizeof(t[0]));
+    
+    if (r < 0) {
+        ESP_LOGE("JSON", "Failed to parse JSON: %d", r);
+        return NULL;
+    }
+
+    /* Assume the top-level element is an object */
+    if (r < 1 || t[0].type != JSMN_OBJECT) {
+        ESP_LOGE("JSON", "Object expected");
+        return NULL;
+    }
+
+    ESP_LOGI(TAG,"Parsed JSON:\n");
+    print_json_value(buffer, t, 0, 0);
+    
+    return buffer;
+}
 
 static char *read_file(char *filename){
 
-    static bool spiffs_initialized = false;
 
     if (!spiffs_initialized){
-        if (init_spiffs() != ESP_OK){
-            return NULL;
-        }
-        spiffs_initialized = true;
+        // if (init_spiffs() != ESP_OK){
+        //     return NULL;
+        // }
+        // spiffs_initialized = true;
+        return NULL;
     }
 
     char filepath[64];
@@ -77,9 +148,9 @@ static char *read_file(char *filename){
 
     size_t read_length = fread(buffer,1,length,f);
 
+    fclose(f);
     if (read_length != length){
         ESP_LOGE(TAG, "Failed to read file %s", filepath);
-        fclose(f);
         free(buffer);
         return NULL;
     }
@@ -88,22 +159,29 @@ static char *read_file(char *filename){
     return buffer;
 }
 
-static char* get_json_tokens(char *buffer){
-    jsmn_parser p;
-    jsmntok_t t[128];
 
-    jsmn_init(&p);
+
+static void parse_button_cb(lv_event_t *e) {
+    ESP_LOGI(TAG, "button clicked");
+    char *text = read_file("app_widgets.json");
+    if (text != NULL) {
+        ESP_LOGI(TAG, "PARSING JSON");
+        get_json_tokens(text);
+        free(text);
+    }
 }
 
-
-
-lv_obj_t *create(){
+lv_obj_t *create() {
     lv_obj_t *primary_screen = lv_obj_create(NULL);
-    lv_obj_t *label = lv_label_create(primary_screen);
-    char *text = read_file("app_widgets.json");
-    printf("Text: %s\n", text);
-    lv_obj_set_align(label, LV_ALIGN_CENTER);
-    lv_label_set_text(label, text);
-    free(text);
+    
+    // Create parse button
+    lv_obj_t *parse_btn = lv_btn_create(primary_screen);
+    lv_obj_add_event_cb(parse_btn, parse_button_cb, LV_EVENT_CLICKED, NULL);
+    lv_obj_align(parse_btn, LV_ALIGN_TOP_MID, 0, 10);
+
+    // Add label to button
+    lv_obj_t *btn_label = lv_label_create(parse_btn);
+    lv_label_set_text(btn_label, "Parse JSON");
+    lv_obj_center(btn_label);
     return primary_screen;
 }

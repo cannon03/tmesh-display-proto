@@ -1,7 +1,7 @@
 {
     "version":            "1.2",
     "project_name":       "tmesh-display-proto",
-    "project_version":    "1",
+    "project_version":    "40c8942-dirty",
     "project_path":       "/home/dev/esp/tmesh-display-proto",
     "idf_path":           "/home/dev/esp/esp-idf",
     "build_dir":          "/home/dev/esp/tmesh-display-proto/build",
