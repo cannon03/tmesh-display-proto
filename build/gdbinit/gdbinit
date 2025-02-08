@@ -1,0 +1,2 @@
+source /home/dev/esp/tmesh-display-proto/build/gdbinit/symbols
+source /home/dev/esp/tmesh-display-proto/build/gdbinit/connect
