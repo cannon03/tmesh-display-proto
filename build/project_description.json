@@ -1,7 +1,7 @@
 {
     "version":            "1.2",
     "project_name":       "tmesh-display-proto",
-    "project_version":    "40c8942-dirty",
+    "project_version":    "02e70e7-dirty",
     "project_path":       "/home/dev/esp/tmesh-display-proto",
     "idf_path":           "/home/dev/esp/esp-idf",
     "build_dir":          "/home/dev/esp/tmesh-display-proto/build",
@@ -1400,12 +1400,12 @@
             "dir": "/home/dev/esp/tmesh-display-proto/main",
             "type": "LIBRARY",
             "lib": "__idf_main",
-            "reqs": [],
+            "reqs": [ "json" ],
             "priv_reqs": [ "spiffs", "espressif__esp32_s3_lcd_ev_board" ],
             "managed_reqs": [],
             "managed_priv_reqs": [ "espressif__esp32_s3_lcd_ev_board" ],
             "file": "/home/dev/esp/tmesh-display-proto/build/esp-idf/main/libmain.a",
-            "sources": [ "/home/dev/esp/tmesh-display-proto/main/main.c", "/home/dev/esp/tmesh-display-proto/main/primary_screen/primary_screen.c" ],
+            "sources": [ "/home/dev/esp/tmesh-display-proto/main/main.c", "/home/dev/esp/tmesh-display-proto/main/primary_screen/primary_screen.c", "/home/dev/esp/tmesh-display-proto/main/filesystem/filesystem.c", "/home/dev/esp/tmesh-display-proto/main/utils/utils.c" ],
             "include_dirs": [ "." ]
         },
         "mbedtls": {
@@ -3090,7 +3090,7 @@
             "prefix": "idf",
             "dir": "/home/dev/esp/tmesh-display-proto/main",
             "lib": "__idf_main",
-            "reqs": [],
+            "reqs": [ "json" ],
             "priv_reqs": [ "spiffs", "espressif__esp32_s3_lcd_ev_board" ],
             "managed_reqs": [],
             "managed_priv_reqs": [ "espressif__esp32_s3_lcd_ev_board" ],
