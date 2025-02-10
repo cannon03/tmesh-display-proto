@@ -1,14 +1,14 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "esp_log.h"
 #include "filesystem/filesystem.h"
 #include "primary_screen.h"
 #include "utils/utils.h"
 
-#include "bsp/esp32_s3_lcd_ev_board.h"
-#include "esp_log.h"
-
 static const char *PRIMARY_TAG = "primary_screen";
+
+widget_array *curr_widgets = NULL;
 
 // static bool spiffs_initialized = false;
 
@@ -158,6 +158,38 @@ static const char *PRIMARY_TAG = "primary_screen";
 // }
 
 static void parse_button_cb(lv_event_t *e) {
+  // ESP_LOGI(PRIMARY_TAG, "button clicked");
+  // char *text = read_file("app_widgets.json");
+  // if (text == NULL) {
+  //   ESP_LOGE(PRIMARY_TAG, "Failed to read file app_widgets.json");
+  //   return;
+  // }
+  // ESP_LOGI(PRIMARY_TAG, "PARSING JSON");
+  // // print_widgets(text);
+  // widget_array *array = get_widgets_array(text);
+  // for (int i = 0; i < array->length; i++) {
+  //   ESP_LOGI(PRIMARY_TAG, "ARRAY ELEMENT  %d:  NAME : %s TYPE : %s", i,
+  //            array->widgets[i].name, array->widgets[i].type);
+  // }
+  // free(text);
+}
+
+static void create_widgets(lv_obj_t *screen, widget_array *widgets) {
+  lv_obj_set_layout(screen, LV_LAYOUT_FLEX);
+  lv_obj_set_flex_flow(screen, LV_FLEX_FLOW_ROW_WRAP);
+
+  for (int i = 0; i < widgets->length; i++) {
+    lv_obj_t *btn = lv_btn_create(screen);
+    lv_obj_set_style_bg_color(btn, lv_color_hex(0xff3864), 0);
+    lv_obj_set_width(btn, lv_pct(20));
+    lv_obj_set_height(btn, lv_pct(20));
+    lv_obj_t *btn_label = lv_label_create(btn);
+    lv_obj_set_align(btn_label, LV_ALIGN_CENTER);
+    lv_label_set_text(btn_label, widgets->widgets[i].name);
+  }
+}
+
+void load_widgets_from_config(lv_obj_t *screen) {
   ESP_LOGI(PRIMARY_TAG, "button clicked");
   char *text = read_file("app_widgets.json");
   if (text == NULL) {
@@ -165,21 +197,23 @@ static void parse_button_cb(lv_event_t *e) {
     return;
   }
   ESP_LOGI(PRIMARY_TAG, "PARSING JSON");
-  print_widgets(text);
+  // print_widgets(text);
+  curr_widgets = NULL;
+  widget_array *array = get_widgets_array(text);
+  curr_widgets = array;
+  for (int i = 0; i < array->length; i++) {
+    ESP_LOGI(PRIMARY_TAG, "ARRAY ELEMENT  %d:  NAME : %s TYPE : %s", i,
+             array->widgets[i].name, array->widgets[i].type);
+  }
+  create_widgets(screen, curr_widgets);
   free(text);
 }
 
 lv_obj_t *create() {
   lv_obj_t *primary_screen = lv_obj_create(NULL);
+  lv_obj_set_style_bg_color(primary_screen, lv_color_hex(0xf39c6b),
+                            LV_STATE_DEFAULT);
+  lv_obj_set_style_pad_all(primary_screen, 20, LV_STATE_DEFAULT);
 
-  // Create parse button
-  lv_obj_t *parse_btn = lv_btn_create(primary_screen);
-  lv_obj_add_event_cb(parse_btn, parse_button_cb, LV_EVENT_CLICKED, NULL);
-  lv_obj_align(parse_btn, LV_ALIGN_TOP_MID, 0, 10);
-
-  // Add label to button
-  lv_obj_t *btn_label = lv_label_create(parse_btn);
-  lv_label_set_text(btn_label, "Parse JSON");
-  lv_obj_center(btn_label);
   return primary_screen;
 }

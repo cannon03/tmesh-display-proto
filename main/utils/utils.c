@@ -2,6 +2,7 @@
 #include "esp_log.h"
 #include "jsmn/jsmn.h"
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #define MAX_TOKENS 128
@@ -15,7 +16,7 @@ static int jsoneq(const char *json, jsmntok_t *tok, const char *s) {
   return -1;
 }
 
-void parse_json(char *buffer) {
+widget_array *parse_json(char *buffer) {
   jsmn_parser p;
   jsmntok_t t[128];
   /* We expect no more than 128 tokens */
@@ -26,26 +27,26 @@ void parse_json(char *buffer) {
   if (r < 0) {
     ESP_LOGE("JSON", "Failed to parse JSON: %d", r);
     // return NULL;
-    return;
+    return NULL;
   }
 
   /* Assume the top-level element is an object */
   if (r < 1 || t[0].type != JSMN_OBJECT) {
     ESP_LOGE("JSON", "Object expected");
     // return NULL;
-    return;
+    return NULL;
   }
 
   int i = 1;
   if (jsoneq(buffer, &t[i], "widgets") != 0) {
-    return;
+    return NULL;
   }
 
   ESP_LOGI(UTILS_TAG, "KEY `widgets` found");
   i++;
 
   if (t[i].type != JSMN_ARRAY || i > r) {
-    return;
+    return NULL;
   }
 
   ESP_LOGI(UTILS_TAG, "Parsing widgets Array");
@@ -106,14 +107,24 @@ void parse_json(char *buffer) {
     i += 2;
   }
 
-  for (size_t i = 0; i < 5; i++) {
-    ESP_LOGI(UTILS_TAG, "NAME : %s", widgets[i].name);
-    ESP_LOGI(UTILS_TAG, "TYPE : %s", widgets[i].type);
-  }
+  widget_array *w = malloc(sizeof(widget_array));
+  w->widgets = malloc(sizeof(tmesh_widget) * widget_count);
+  w->length = widget_count;
+  memcpy(w->widgets, widgets, sizeof(tmesh_widget) * widget_count);
+
+  // for (size_t i = 0; i < widget_count; i++) {
+  //   tmesh_widget widget = w->widgets[i];
+  //   ESP_LOGI(UTILS_TAG, "NAME : %s", widget.name);
+  //   ESP_LOGI(UTILS_TAG, "TYPE : %s", widget.type);
+  // }
+  return w;
 }
 
 void print_widgets(char *json_string) {
   parse_json(json_string);
   ESP_LOGI(UTILS_TAG, "JSON Parsed Sucessfully");
-  // get_widgets(tokens, json_string);
+}
+
+widget_array *get_widgets_array(char *json_string) {
+  return parse_json(json_string);
 }

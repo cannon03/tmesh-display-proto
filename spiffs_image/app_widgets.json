@@ -1,23 +1,91 @@
 {
     "widgets": [
         {
-            "name": "light 1",
+            "name": "light 16",
             "type": "light"
         },
         {
-            "name": "fan 1",
+            "name": "fan 9",
             "type": "fan"
         },
         {
-            "name": "light 2",
+            "name": "light 17",
             "type": "light"
         },
         {
-            "name": "fan 2",
+            "name": "fan 10",
             "type": "fan"
         },
         {
-            "name": "light 3",
+            "name": "light 18",
+            "type": "light"
+        },
+        {
+            "name": "fan 11",
+            "type": "fan"
+        },
+        {
+            "name": "light 19",
+            "type": "light"
+        },
+        {
+            "name": "fan 12",
+            "type": "fan"
+        },
+        {
+            "name": "light 20",
+            "type": "light"
+        },
+        {
+            "name": "fan 13",
+            "type": "fan"
+        },
+        {
+            "name": "light 21",
+            "type": "light"
+        },
+        {
+            "name": "fan 14",
+            "type": "fan"
+        },
+        {
+            "name": "light 22",
+            "type": "light"
+        },
+        {
+            "name": "fan 15",
+            "type": "fan"
+        },
+        {
+            "name": "light 23",
+            "type": "light"
+        },
+        {
+            "name": "light 23",
+            "type": "light"
+        },
+        {
+            "name": "light 23",
+            "type": "light"
+        },
+        {
+            "name": "light 23",
+            "type": "light"
+        },
+        {
+            "name": "light 23",
+            "type": "light"
+        },
+        {
+            "name": "light 23",
+            "type": "light"
+        },
+        {
+            "name": "light 23",
+            "type": "light"
+        },
+        {
+            "name": "light 23",
             "type": "light"
         }
     ]

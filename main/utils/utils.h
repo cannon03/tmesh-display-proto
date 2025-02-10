@@ -23,6 +23,11 @@ typedef struct {
   char *type;
 } tmesh_widget;
 
-void get_widgets(jsmntok_t *tokens, char *json_string);
+typedef struct {
+  tmesh_widget *widgets;
+  size_t length;
+} widget_array;
+
+widget_array *get_widgets_array(char *json_string);
 void print_widgets(char *json_string);
 #endif

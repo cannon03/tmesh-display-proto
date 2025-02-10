@@ -4,4 +4,5 @@
 #include "lvgl.h"
 
 lv_obj_t *create();
+void load_widgets_from_config(lv_obj_t *screen);
 #endif /* PRIMARY_SCREEN_H */
