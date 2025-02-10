@@ -175,14 +175,12 @@ static void parse_button_cb(lv_event_t *e) {
 }
 
 static void create_widgets(lv_obj_t *screen, widget_array *widgets) {
-  lv_obj_set_layout(screen, LV_LAYOUT_FLEX);
-  lv_obj_set_flex_flow(screen, LV_FLEX_FLOW_ROW_WRAP);
 
   for (int i = 0; i < widgets->length; i++) {
     lv_obj_t *btn = lv_btn_create(screen);
     lv_obj_set_style_bg_color(btn, lv_color_hex(0xff3864), 0);
-    lv_obj_set_width(btn, lv_pct(20));
-    lv_obj_set_height(btn, lv_pct(20));
+    lv_obj_set_width(btn, lv_pct(25));
+    lv_obj_set_height(btn, lv_pct(30));
     lv_obj_t *btn_label = lv_label_create(btn);
     lv_obj_set_align(btn_label, LV_ALIGN_CENTER);
     lv_label_set_text(btn_label, widgets->widgets[i].name);
@@ -209,11 +207,13 @@ void load_widgets_from_config(lv_obj_t *screen) {
   free(text);
 }
 
-lv_obj_t *create() {
+lv_obj_t *create_primary_screen() {
   lv_obj_t *primary_screen = lv_obj_create(NULL);
+  lv_obj_set_layout(primary_screen, LV_LAYOUT_FLEX);
+  lv_obj_set_flex_flow(primary_screen, LV_FLEX_FLOW_ROW_WRAP);
   lv_obj_set_style_bg_color(primary_screen, lv_color_hex(0xf39c6b),
                             LV_STATE_DEFAULT);
-  lv_obj_set_style_pad_all(primary_screen, 20, LV_STATE_DEFAULT);
+  lv_obj_set_style_pad_top(primary_screen, 20, LV_STATE_DEFAULT);
 
   return primary_screen;
 }

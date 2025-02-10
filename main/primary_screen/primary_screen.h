@@ -3,6 +3,6 @@
 #include "esp_spiffs.h"
 #include "lvgl.h"
 
-lv_obj_t *create();
+lv_obj_t *create_primary_screen();
 void load_widgets_from_config(lv_obj_t *screen);
 #endif /* PRIMARY_SCREEN_H */
