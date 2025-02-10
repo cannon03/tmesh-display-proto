@@ -9,6 +9,7 @@
 #include "misc/lv_event.h"
 #include "primary_screen/primary_screen.h"
 #include "settings_screen/settings_screen.h"
+#include "wifi_screen/wifi_screen.h"
 lv_obj_t *primary_screen = NULL;
 lv_obj_t *settings_screen = NULL;
 lv_obj_t *curr_screen = NULL;
@@ -47,7 +48,7 @@ void app_main(void) {
   bsp_display_lock(0);
   primary_screen = create_primary_screen();
   settings_screen = create_settings_screen();
-  curr_screen = settings_screen;
+  curr_screen = primary_screen;
   lv_screen_load(curr_screen);
   bsp_display_unlock();
   load_widgets_from_config(primary_screen);
